@@ -1,42 +1,48 @@
-name: Build Docker Image
+name: Build and Push OpenWrt Build Image
 
 on:
   push:
-    branches:
-      - 23.05
+    branches: [ main ]                     # 推送到 main 时触发
     paths:
-      - 'Dockerfile'
-  workflow_dispatch:
-  schedule:
-    - cron: '0 3 1 * *'
+      - 'Dockerfile'                        # 只有 Dockerfile 变化时才构建（可选）
+  workflow_dispatch:                         # 允许手动触发
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/openwrt-build   # 注意自动转为小写
 
 jobs:
-  build-docker:
+  build-and-push:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
-      packages: write
-      
+      packages: write                         # 必须授予写入 GHCR 的权限
+
     steps:
-      - name: 检出代码
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 登录 GitHub Container Registry
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 设置小写仓库名
-        id: lower
-        run: |
-          echo "repo_owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}   # 仅在默认分支生成 latest
+            type=sha,format=long                                  # 基于 commit SHA 的标签（例如 sha-abc123...）
+            type=ref,event=branch                                 # 分支名标签（例如 main）
 
-      - name: 构建并推送 Docker 镜像
-        uses: docker/build-push-action@v6
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ steps.lower.outputs.repo_owner }}/openwrt-build:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
