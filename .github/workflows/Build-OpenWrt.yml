@@ -14,8 +14,8 @@ on:
           - RAX3000Me
           - X86_64
         default: 360T7
-  schedule:
-    - cron: "0 0 15 * *"
+ # schedule:
+ #   - cron: "0 0 15 * *"
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
