@@ -346,7 +346,9 @@ jobs:
           PACKAGES="${{ steps.packages.outputs.packages }}"
           
           cd imagebuilder
-          
+          echo "CONFIG_TARGET_ROOTFS_INITRAMFS=y" >> .config
+          echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_LZMA=y" >> .config
+          make defconfig
           echo "🚀 Building with PROFILE=$PROFILE"
           echo "📦 Packages: $PACKAGES"
           echo "🔄 Using $(nproc) parallel jobs"
