@@ -1,13 +1,13 @@
 # 主机名，可自定义
 export hostname="360T7"
 # 设备型号，必须与官方设备型号一致
-export profile="qihoo_360t7"
+export profile="qihoo_360t7-ubi"
 # 设备架构，必须与官方设备架构一致
 export targets="mediatek/filogic"
 # 设备CPU架构（用于下载预编译包）
 export arch="aarch64_cortex-a53"
 # OpenWrt版本，必须与官方版本一致
-export version="25.12"
+export version="25.12.2"
 # 后台管理IP地址
 export ip_address="192.168.10.1"
 # 网络掩码
