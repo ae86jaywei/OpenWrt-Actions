@@ -9,6 +9,6 @@ export arch="aarch64_cortex-a53"
 # OpenWrt版本，必须与官方版本一致
 export version="25.12.2"
 # 后台管理IP地址
-export ip_address="192.168.10.1"
+export ip_address="192.168.1.1"
 # 网络掩码
 export netmask="255.255.255.0"
